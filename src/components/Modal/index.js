@@ -20,10 +20,10 @@ const css = `
   }
 
   :host(.enter) {
-    animation: enter 0.2s forwards;
+    animation: modal-enter 0.2s forwards;
   }
   :host(.exit) {
-    animation: exit 0.2s forwards;
+    animation: modal-exit 0.2s forwards;
   }
 
   .backdrop {
@@ -42,7 +42,7 @@ const css = `
     background-color: #fff;
   }
 
-  @keyframes enter {
+  @keyframes modal-enter {
     from {
       opacity: 0;
     }
@@ -51,7 +51,7 @@ const css = `
       display: flex;
     }
   }
-  @keyframes exit {
+  @keyframes modal-exit {
     from {
       opacity: 1;
     }
