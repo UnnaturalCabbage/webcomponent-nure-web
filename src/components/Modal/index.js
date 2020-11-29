@@ -37,8 +37,8 @@ const css = `
 
   .container {
     position: absolute;
+    max-width: 90vw;
     padding: 10px;
-    margin: 10px;
     border-radius: 5px;
     background-color: var(--background-color);
   }
