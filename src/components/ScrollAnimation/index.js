@@ -9,22 +9,18 @@ const css = `
     visibility: hidden;
   }
 
-  :host(.surfacing) {
+  :host(.enter) {
     visibility: visible;
-    animation: 1s scroll-animation-surfacing-enter;
+    animation: var(--animation-time) var(--animation);
   }
-  @keyframes scroll-animation-surfacing-enter {
+
+  @keyframes scroll-animation-surfacing {
     from {
       opacity: 0;
     }
     to {
       opacity: 1;
     }
-  }
-
-  :host(.slide-from-left) {
-    visibility: visible;
-    animation: 1s scroll-animation-slide-from-left;
   }
   @keyframes scroll-animation-slide-from-left {
     from {
@@ -33,11 +29,6 @@ const css = `
     to {
       transform: translateX(0%);
     }
-  }
-
-  :host(.slide-from-right) {
-    visibility: visible;
-    animation: 1s scroll-animation-slide-from-right;
   }
   @keyframes scroll-animation-slide-from-right {
     from {
@@ -52,22 +43,42 @@ const css = `
 const template = document.createElement("template");
 template.innerHTML = `<style>${css}</style>${html}`;
 
+/**
+ * Animate once the content inside this component when it is in the viewport
+ * 
+ * @element component-scroll-animation
+ * @slot
+ * 
+ * @attribute {"scroll-animation-surfacing" | "scroll-animation-slide-from-left" | "scroll-animation-slide-from-right"} animation - animation that will be played
+ * @attribute {string} animation-time -
+ * 
+ * @example
+ *   <component-scroll-animation data-animation="scroll-animation-surfacing" data-animation-time="1.5s"></<component-scroll-animation>
+ */
 @Component({
   tag: "scroll-animation"
 })
 class ScrollAnimation extends HTMLElement {
-  _observer = null;
-  _animation = "surfacing";
+  _observer;
+  _animation;
 
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    const { animation } = this.dataset;
-    if (animation) {
-      this._animation = animation;
-    }
+    const {
+      animation = "",
+      animationTime = "1s"
+    } = this.dataset;
+    const style = document.createElement("style");
+    style.innerHTML = `
+      :host {
+        --animation: ${animation};
+        --animation-time: ${animationTime};
+      }
+    `;
+    this.shadowRoot.appendChild(style);
 
     this._observer = new IntersectionObserver(this._onIntersection, {
       threshold: 0.1
@@ -78,18 +89,7 @@ class ScrollAnimation extends HTMLElement {
   _onIntersection = ([e]) => {
     if (e && e.isIntersecting) {
       this._observer.unobserve(this);
-      switch (this._animation) {
-        case "surfacing":
-          this.classList.add("surfacing");
-          break;
-        case "slide-from-left":
-          this.classList.add("slide-from-left");
-          break;
-        case "slide-from-right":
-          this.classList.add("slide-from-right");
-          break;
-        default: {}
-      }
+      this.classList.add("enter");
     }
   };
 }

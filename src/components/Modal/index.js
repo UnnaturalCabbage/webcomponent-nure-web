@@ -20,10 +20,10 @@ const css = `
   }
 
   :host(.enter) {
-    animation: modal-enter 0.2s forwards;
+    animation: modal-enter var(--animation-time) forwards;
   }
   :host(.exit) {
-    animation: modal-exit 0.2s forwards;
+    animation: modal-exit var(--animation-time) forwards;
   }
 
   .backdrop {
@@ -38,8 +38,9 @@ const css = `
   .container {
     position: absolute;
     padding: 10px;
+    margin: 10px;
     border-radius: 5px;
-    background-color: #fff;
+    background-color: var(--background-color);
   }
 
   @keyframes modal-enter {
@@ -75,6 +76,19 @@ class Modal extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
+
+    const {
+      animationTime = "0.2s",
+      backgroundColor = "#fff"
+    } = this.dataset;
+    const style = document.createElement("style");
+    style.innerHTML = `
+      :host {
+        --animation-time: ${animationTime};
+        --background-color: ${backgroundColor}
+      }
+    `;
+    this.shadowRoot.appendChild(style);
 
     this.shadowRoot.addEventListener("click", (e) => {
       switch (e.target.id) {
